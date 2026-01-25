@@ -1,99 +1,86 @@
+'use client'
+
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 interface ProgressIndicatorProps {
   currentStep: number
+  onBack?: () => void
   className?: string
 }
 
 const steps = [
-  { id: 1, label: 'Your debt profile' },
-  { id: 2, label: 'Your details' },
-  { id: 3, label: 'Reduce your debt' },
+  { id: 1, label: 'Your debt profile', subtitle: 'Tell us about your debt situation' },
+  { id: 2, label: 'Your details', subtitle: 'Almost there! Just a few more details' },
+  { id: 3, label: 'Reduce your debt', subtitle: 'Final step to see your options' },
 ]
+
+const TOTAL_SEGMENTS = 6
+const SEGMENTS_PER_STEP = TOTAL_SEGMENTS / steps.length // 2 segments per step
 
 /**
  * ProgressIndicator Component
  * 
- * 3-step progress bar showing user's journey position
- * Steps: "Your debt profile" → "Your details" → "Reduce your debt"
+ * Segmented pill-style progress bar with dynamic subtitle
+ * Shows progress through the funnel with visual segments
  * 
  * @example
- * <ProgressIndicator currentStep={1} />
+ * <ProgressIndicator currentStep={1} onBack={handleBack} />
  */
-export function ProgressIndicator({ currentStep, className }: ProgressIndicatorProps) {
+export function ProgressIndicator({ currentStep, onBack, className }: ProgressIndicatorProps) {
+  // Calculate filled segments based on current step
+  const filledSegments = currentStep * SEGMENTS_PER_STEP
+  const currentStepData = steps.find(s => s.id === currentStep)
+
   return (
-    <div className={cn('w-full', className)}>
-      {/* Desktop Progress */}
-      <div className="hidden sm:flex items-center justify-center gap-8">
-        {steps.map((step, index) => {
-          const isActive = step.id === currentStep
-          const isCompleted = step.id < currentStep
-          
-          return (
-            <div 
-              key={step.id}
-              className="flex items-center gap-2"
+    <div className={cn('w-full bg-white sticky top-12 z-40', className)}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+        {/* Back Button Row */}
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-neutral-900 hover:text-primary-700 transition-colors mb-4"
+            aria-label="Go back"
+          >
+            <svg 
+              width="16" 
+              height="24" 
+              viewBox="0 0 16 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-5"
             >
-              {/* Step indicator */}
-              <div 
-                className={cn(
-                  'flex items-center justify-center w-6 h-6 rounded-full text-body-sm font-medium transition-colors',
-                  isActive && 'bg-primary-700 text-white',
-                  isCompleted && 'bg-primary-700 text-white',
-                  !isActive && !isCompleted && 'bg-neutral-200 text-neutral-500'
-                )}
-              >
-                {isCompleted ? (
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  step.id
-                )}
-              </div>
-              
-              {/* Step label */}
-              <span 
-                className={cn(
-                  'text-body-sm transition-colors',
-                  isActive && 'text-primary-700 font-semibold',
-                  isCompleted && 'text-neutral-800',
-                  !isActive && !isCompleted && 'text-neutral-500'
-                )}
-              >
-                {step.label}
-              </span>
-              
-              {/* Connector line */}
-              {index < steps.length - 1 && (
-                <div 
-                  className={cn(
-                    'hidden lg:block w-16 h-0.5 ml-2',
-                    isCompleted ? 'bg-primary-700' : 'bg-neutral-200'
-                  )}
-                />
+              <path 
+                d="M10 6L4 12L10 18" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="text-sm font-normal leading-5">Back</span>
+          </button>
+        )}
+
+        {/* Subtitle */}
+        <p className="text-center text-sm text-neutral-600 mb-2">
+          {currentStepData?.subtitle}
+        </p>
+
+        {/* Segmented Progress Bar */}
+        <div className="flex justify-center gap-1.5">
+          {[...Array(TOTAL_SEGMENTS)].map((_, index) => (
+            <div
+              key={index}
+              className={cn(
+                'h-1.5 rounded-full transition-colors duration-300',
+                'w-8 sm:w-10 md:w-12',
+                index < filledSegments 
+                  ? 'bg-[#0C7663]' 
+                  : 'bg-[#D7DCE5]'
               )}
-            </div>
-          )
-        })}
-      </div>
-      
-      {/* Mobile Progress Bar */}
-      <div className="sm:hidden">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-body-sm text-neutral-800 font-medium">
-            {steps.find(s => s.id === currentStep)?.label}
-          </span>
-          <span className="text-body-sm text-neutral-500">
-            Step {currentStep} of {steps.length}
-          </span>
-        </div>
-        <div className="w-full h-1.5 bg-neutral-200 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-primary-700 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / steps.length) * 100}%` }}
-          />
+            />
+          ))}
         </div>
       </div>
     </div>

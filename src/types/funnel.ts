@@ -4,14 +4,20 @@
  * Type definitions for the debt relief lead gen funnel
  */
 
-export type DebtType = 'credit-card' | 'loan' | 'both'
+export type DebtTypeOption = 'credit-card' | 'personal-loan' | 'both'
+
+export const DEBT_TYPE_OPTIONS = [
+  { value: 'credit-card', label: 'Credit Card Debt' },
+  { value: 'personal-loan', label: 'Personal Loan' },
+  { value: 'both', label: 'Both' },
+] as const
 
 export interface FunnelData {
   // Step 1: Location
   state?: string
   
-  // Step 2: Debt Type
-  debtType?: DebtType
+  // Step 2: Debt Types (multi-select)
+  debtTypes?: DebtTypeOption[]
   
   // Step 3: Debt Amount
   debtAmount?: number

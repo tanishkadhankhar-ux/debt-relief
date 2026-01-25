@@ -10,7 +10,7 @@ interface TrustBadgesProps {
  * TrustBadges Component
  * 
  * Bottom trust indicators that appear on all screens
- * Shows "Reduce your loan by 50%", "No impact on credit score", "Your data is safe with us"
+ * Shows "Compare top providers", "100% free service", "Your data is secure"
  * 
  * @example
  * <TrustBadges />
@@ -19,15 +19,15 @@ export function TrustBadges({ className }: TrustBadgesProps) {
   const badges = [
     {
       icon: Percent,
-      text: 'Reduce your loan by 50%',
+      text: 'Compare top providers',
     },
     {
       icon: Shield,
-      text: 'No impact on credit score',
+      text: '100% free service',
     },
     {
       icon: Lock,
-      text: 'Your data is safe with us',
+      text: 'Your data is secure',
     },
   ]
   

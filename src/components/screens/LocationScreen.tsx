@@ -23,7 +23,7 @@ interface LocationScreenProps {
 /**
  * LocationScreen
  * 
- * Step 1 of the funnel - "See if You Qualify for Loan Free Debt Relief"
+ * Step 1 of the funnel - "See How Much You Could Save with Debt Relief"
  * Shows a state dropdown with interactive US map visualization and stats
  */
 // Default state to show pin on initial load
@@ -84,12 +84,12 @@ export function LocationScreen({
         {/* Headline */}
         <div className="space-y-2 text-center">
           <h1 className="font-display text-display sm:text-display-md lg:text-display-lg text-neutral-900 text-center">
-            <span className="block">See if You Qualify for</span>
-            <span className="block">Loan-Free Debt Relief</span>
+            <span className="block">See How Much You Could</span>
+            <span className="block">Save with Debt Relief</span>
           </h1>
           <p className="text-body text-neutral-500 text-center">
-            Have more than 15K in credit card and loan debt? You can reduce what you owe 
-            and lower your payments by as much as 50%
+            Struggling with $15K+ in credit card or loan debt? Get matched with relief 
+            options that could cut your payments in half.
           </p>
         </div>
         
@@ -165,9 +165,8 @@ function MapVisual({
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M8 1L9.79 5.73L15 6.46L11.25 9.85L12.18 15L8 12.52L3.82 15L4.75 9.85L1 6.46L6.21 5.73L8 1Z" stroke="#000000" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          <span className="text-xs leading-4 text-neutral-900">
-            <span className="font-normal">Reduce what you owe by up to</span>
-            <span className="font-bold"> 50%</span>
+          <span className="text-xs leading-4 text-neutral-900 font-medium">
+            Reduce your payments by up to 50%
           </span>
         </div>
       </div>
@@ -198,7 +197,7 @@ function MapVisual({
               className="font-display text-2xl font-bold leading-8 text-neutral-800"
               duration={800}
             />
-            <div className="text-xs font-normal leading-4 text-neutral-900">Avg debt per customer</div>
+            <div className="text-xs font-normal leading-4 text-neutral-900">Avg debt enrolled</div>
           </div>
           <div className="flex flex-col gap-2">
             <AnimatedCounter
@@ -207,7 +206,7 @@ function MapVisual({
               className="font-display text-2xl font-bold leading-8 text-primary-700"
               duration={800}
             />
-            <div className="text-xs font-normal leading-4 text-neutral-900">Avg savings on monthly payments</div>
+            <div className="text-xs font-normal leading-4 text-neutral-900">Average saved by<br />customers like you</div>
           </div>
         </div>
       </div>

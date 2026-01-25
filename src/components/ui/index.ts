@@ -20,3 +20,5 @@ export { USMap } from './USMap'
 export { AnimatedCounter } from './AnimatedCounter'
 
 export { Starburst } from './Starburst'
+
+export { LottieIcon } from './LottieIcon'

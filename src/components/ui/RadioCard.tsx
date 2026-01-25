@@ -45,8 +45,8 @@ const RadioCard = React.forwardRef<
   <RadioGroupPrimitive.Item
     ref={ref}
     className={cn(
-      'group flex items-center gap-4 w-full bg-white border border-neutral-200 rounded-[8px]',
-      'p-4 cursor-pointer transition-all duration-200',
+      'group flex flex-col items-center justify-center gap-2 w-full bg-white border border-neutral-200 rounded-[8px]',
+      'p-4 cursor-pointer transition-all duration-200 min-h-[100px]',
       'hover:border-primary-700',
       'data-[state=checked]:border-primary-700 data-[state=checked]:bg-primary-300',
       'focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
@@ -55,6 +55,25 @@ const RadioCard = React.forwardRef<
     )}
     {...props}
   >
+    {/* Icon (optional) */}
+    {icon && (
+      <div className="text-neutral-500 group-data-[state=checked]:text-primary-700">
+        {icon}
+      </div>
+    )}
+    
+    {/* Content */}
+    <div className="text-center">
+      <div className="text-body font-medium text-neutral-800">
+        {children}
+      </div>
+      {description && (
+        <div className="text-body-sm text-neutral-500 mt-1">
+          {description}
+        </div>
+      )}
+    </div>
+    
     {/* Custom radio indicator */}
     <div className={cn(
       'flex items-center justify-center w-5 h-5 rounded-full border-2',
@@ -65,25 +84,6 @@ const RadioCard = React.forwardRef<
         'w-2 h-2 rounded-full bg-white scale-0 transition-transform duration-200',
         'group-data-[state=checked]:scale-100'
       )} />
-    </div>
-    
-    {/* Icon (optional) */}
-    {icon && (
-      <div className="text-neutral-500 group-data-[state=checked]:text-primary-700">
-        {icon}
-      </div>
-    )}
-    
-    {/* Content */}
-    <div className="flex-1">
-      <div className="text-body font-medium text-neutral-800">
-        {children}
-      </div>
-      {description && (
-        <div className="text-body-sm text-neutral-500 mt-1">
-          {description}
-        </div>
-      )}
     </div>
   </RadioGroupPrimitive.Item>
 ))

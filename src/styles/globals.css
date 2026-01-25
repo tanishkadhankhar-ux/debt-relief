@@ -303,3 +303,17 @@
     transform: translate(-50%, -50%) scale(1.5);
   }
 }
+
+/* Subtle bounce animation for selected icons */
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 0.6s ease-in-out;
+}

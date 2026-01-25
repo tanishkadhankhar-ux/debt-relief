@@ -19,7 +19,7 @@ export function Header({ className }: HeaderProps) {
   return (
     <header 
       className={cn(
-        'w-full bg-white',
+        'w-full bg-white sticky top-0 z-50',
         className
       )}
       style={{
