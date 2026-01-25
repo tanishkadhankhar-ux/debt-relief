@@ -33,7 +33,7 @@ export function DebtProfileScreen({
   }
   
   return (
-    <FormLayout currentStep={2} onBack={onBack}>
+    <FormLayout currentStep={7} onBack={onBack}>
       <form onSubmit={handleSubmit} className="animate-slide-up space-y-6">
         {/* Headline */}
         <div className="space-y-2 text-center">

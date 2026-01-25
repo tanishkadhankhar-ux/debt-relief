@@ -47,7 +47,7 @@ export function DebtAmountScreen({
   
   return (
     <FormLayout 
-      currentStep={1} 
+      currentStep={3} 
       onBack={onBack}
       sideContent={<SavingsPreview debtAmount={debtAmount} savings={savings} />}
     >

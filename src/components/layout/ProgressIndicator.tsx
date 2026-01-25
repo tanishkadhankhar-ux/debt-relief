@@ -9,28 +9,45 @@ interface ProgressIndicatorProps {
   className?: string
 }
 
-const steps = [
-  { id: 1, label: 'Your debt profile', subtitle: 'Tell us about your debt situation' },
-  { id: 2, label: 'Your details', subtitle: 'Almost there! Just a few more details' },
-  { id: 3, label: 'Reduce your debt', subtitle: 'Final step to see your options' },
-]
+// Step-specific subtitles for more granular feedback
+const stepSubtitles: Record<number, string> = {
+  1: 'Tell us about your debt situation',
+  2: 'What kind of debt do you have?',
+  3: 'How much debt do you have?',
+  4: 'Tell us about your income',
+  5: 'A few details about you',
+  6: 'Almost there!',
+  7: 'Your personalized debt profile',
+  8: 'Where should we send your results?',
+  9: 'Verify your phone number',
+  10: 'Final step - your address',
+}
 
 const TOTAL_SEGMENTS = 6
-const SEGMENTS_PER_STEP = TOTAL_SEGMENTS / steps.length // 2 segments per step
+const TOTAL_STEPS = 10
 
 /**
  * ProgressIndicator Component
  * 
- * Segmented pill-style progress bar with dynamic subtitle
- * Shows progress through the funnel with visual segments
+ * Segmented pill-style progress bar with progressive fill within each segment
+ * Shows progress through the funnel with dynamic subtitle
+ * 
+ * currentStep: 1-10 representing each screen in the funnel
  * 
  * @example
  * <ProgressIndicator currentStep={1} onBack={handleBack} />
  */
 export function ProgressIndicator({ currentStep, onBack, className }: ProgressIndicatorProps) {
-  // Calculate filled segments based on current step
-  const filledSegments = currentStep * SEGMENTS_PER_STEP
-  const currentStepData = steps.find(s => s.id === currentStep)
+  // Calculate how much of the total progress we've made (0 to 1)
+  const totalProgress = currentStep / TOTAL_STEPS
+  
+  // Calculate how many full segments + partial fill
+  const progressInSegments = totalProgress * TOTAL_SEGMENTS
+  const fullSegments = Math.floor(progressInSegments)
+  const partialFill = (progressInSegments - fullSegments) * 100 // percentage of current segment
+  
+  // Get subtitle for current step
+  const subtitle = stepSubtitles[currentStep] || 'Continue your application'
 
   return (
     <div className={cn('w-full bg-white sticky top-12 z-40', className)}>
@@ -64,23 +81,31 @@ export function ProgressIndicator({ currentStep, onBack, className }: ProgressIn
 
         {/* Subtitle */}
         <p className="text-center text-sm text-neutral-600 mb-2">
-          {currentStepData?.subtitle}
+          {subtitle}
         </p>
 
-        {/* Segmented Progress Bar */}
+        {/* Segmented Progress Bar with progressive fill */}
         <div className="flex justify-center gap-1.5">
-          {[...Array(TOTAL_SEGMENTS)].map((_, index) => (
-            <div
-              key={index}
-              className={cn(
-                'h-1.5 rounded-full transition-colors duration-300',
-                'w-8 sm:w-10 md:w-12',
-                index < filledSegments 
-                  ? 'bg-[#0C7663]' 
-                  : 'bg-[#D7DCE5]'
-              )}
-            />
-          ))}
+          {[...Array(TOTAL_SEGMENTS)].map((_, index) => {
+            // Determine fill state for this segment
+            const isFull = index < fullSegments
+            const isPartial = index === fullSegments
+            const isEmpty = index > fullSegments
+            
+            return (
+              <div
+                key={index}
+                className="h-1.5 rounded-full w-8 sm:w-10 md:w-12 bg-[#D7DCE5] overflow-hidden"
+              >
+                <div 
+                  className="h-full bg-[#0C7663] rounded-full transition-all duration-500 ease-out"
+                  style={{ 
+                    width: isFull ? '100%' : isPartial ? `${partialFill}%` : '0%' 
+                  }}
+                />
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>

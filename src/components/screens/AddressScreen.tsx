@@ -56,7 +56,7 @@ export function AddressScreen({
   }
   
   return (
-    <FormLayout currentStep={3} onBack={onBack}>
+    <FormLayout currentStep={10} onBack={onBack}>
       <form onSubmit={handleSubmit(onFormSubmit)} className="animate-slide-up space-y-6">
         {/* Headline */}
         <div className="space-y-2 text-center">

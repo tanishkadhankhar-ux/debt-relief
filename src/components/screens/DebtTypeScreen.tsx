@@ -22,7 +22,7 @@ type DebtOption = {
 const DEBT_OPTIONS: DebtOption[] = [
   { value: 'credit-card', label: 'Credit Card Debt', lottie: creditCardAnimation },
   { value: 'personal-loan', label: 'Personal Loan', lottie: personalLoanAnimation },
-  { value: 'both', label: 'Both', lottie: bothAnimation, containerClass: 'w-40 h-20' },
+  { value: 'both', label: 'Both', lottie: bothAnimation, containerClass: 'w-24 h-16 sm:w-40 sm:h-20' },
 ]
 
 interface DebtTypeScreenProps {
@@ -53,7 +53,7 @@ export function DebtTypeScreen({
   }
   
   return (
-    <FormLayout currentStep={1} onBack={onBack}>
+    <FormLayout currentStep={2} onBack={onBack}>
       <div className="animate-slide-up space-y-8">
         {/* Headline */}
         <div className="space-y-2 text-center">
@@ -63,8 +63,8 @@ export function DebtTypeScreen({
           </h1>
         </div>
         
-        {/* Debt Type Options - 3 Column Grid */}
-        <div className="grid grid-cols-3 gap-4">
+        {/* Debt Type Options - Responsive Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {DEBT_OPTIONS.map((option) => {
             const isSelected = selectedType === option.value
             return (
@@ -73,28 +73,70 @@ export function DebtTypeScreen({
                 type="button"
                 onClick={() => handleSelect(option.value)}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-3 p-6 rounded-lg border transition-all duration-200 min-h-[180px]',
+                  // Mobile: horizontal layout, Desktop: vertical layout
+                  'flex sm:flex-col items-center justify-between sm:justify-center',
+                  'gap-4 sm:gap-3 p-4 sm:p-6 rounded-lg border transition-all duration-200',
+                  'sm:min-h-[180px]',
                   'hover:border-primary-700 hover:scale-[1.02]',
                   isSelected 
                     ? 'border-primary-700 bg-primary-300' 
                     : 'border-neutral-200 bg-white'
                 )}
               >
-                {/* Animated Icon */}
-                <div className={cn('flex items-center justify-center', option.containerClass || 'w-20 h-20')}>
+                {/* Label - Left on mobile, below icon on desktop */}
+                <span className="text-base font-medium text-neutral-800 text-left sm:text-center leading-tight order-1 sm:order-2">
+                  {option.label}
+                </span>
+                
+                {/* Animated Icon - Right on mobile, above label on desktop */}
+                <div className={cn(
+                  'flex items-center justify-center flex-shrink-0 order-2 sm:order-1',
+                  option.containerClass || 'w-16 h-16 sm:w-20 sm:h-20'
+                )}>
                   <LottieIcon 
                     animationData={option.lottie} 
                     className="w-full h-full"
                   />
                 </div>
-                
-                {/* Label */}
-                <span className="text-base font-medium text-neutral-800 text-center leading-tight">
-                  {option.label}
-                </span>
               </button>
             )
           })}
+        </div>
+
+        {/* How it works section */}
+        <div className="flex flex-col items-center gap-4">
+          <h2 className="text-center text-xl font-bold text-[#1E2125] leading-6">
+            How it works
+          </h2>
+          <div className="w-full bg-[#FEF9EF] rounded-lg p-4 flex flex-col sm:flex-row items-stretch gap-4">
+            {/* Point 1 */}
+            <div className="flex-1 flex items-center gap-4">
+              <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#1E2125" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <p className="text-sm font-normal text-[#1E2125] leading-5">
+                Our debt relief partners work to reduce what you owe
+              </p>
+            </div>
+            
+            {/* Divider - horizontal on mobile, vertical on desktop */}
+            <div className="h-px sm:h-auto sm:w-px bg-[#C0C0C0]"></div>
+            
+            {/* Point 2 */}
+            <div className="flex-1 flex items-center gap-4">
+              <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z" stroke="#1E2125" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 10H21" stroke="#1E2125" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <p className="text-sm font-normal text-[#1E2125] leading-5">
+                You stop paying every creditor separately. Just one reduced bill by up to 50%
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Trust indicators */}
