@@ -11,12 +11,12 @@ interface ProgressIndicatorProps {
 
 // Step-specific subtitles for more granular feedback
 const stepSubtitles: Record<number, string> = {
-  1: 'Tell us about your debt situation',
+  1: "Let's see if you qualify",
   2: 'What kind of debt do you have?',
   3: 'How much debt do you have?',
   4: 'Tell us about your income',
-  5: 'A few details about you',
-  6: 'Almost there!',
+  5: 'When were you born?',
+  6: "What's your name?",
   7: 'Your personalized debt profile',
   8: 'Where should we send your results?',
   9: 'Verify your phone number',

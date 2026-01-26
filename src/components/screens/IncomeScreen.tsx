@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import Image from 'next/image'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { FormLayout } from '@/components/layout/FormLayout'
 import { Button } from '@/components/ui/Button'
@@ -30,20 +29,21 @@ function MoneyPyramid({ income }: MoneyPyramidProps) {
   const rows = Array.from({ length: tier }, (_, i) => i + 1)
 
   return (
-    <div className="flex flex-col items-center gap-1 min-h-[120px] justify-end">
+    <div className="flex flex-col items-center -space-y-2">
       {rows.map((count, rowIndex) => (
         <div
           key={`row-${rowIndex}-${tier}`}
-          className={`flex gap-1 animate-money-fade-in pyramid-row-${rowIndex + 1}`}
+          className={`flex -space-x-2 animate-money-fade-in pyramid-row-${rowIndex + 1}`}
         >
           {Array.from({ length: count }).map((_, iconIndex) => (
-            <Image
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
               key={`icon-${rowIndex}-${iconIndex}`}
               src="/Money.svg"
               alt=""
-              width={32}
-              height={32}
-              className={`w-8 h-8 animate-money-fade-in pyramid-icon-${iconIndex}`}
+              width={52}
+              height={40}
+              className={`w-[52px] h-[40px] animate-money-fade-in pyramid-icon-${iconIndex}`}
             />
           ))}
         </div>
@@ -76,9 +76,6 @@ export function IncomeScreen({
   
   // Calculate savings with income-aware monthly payments
   const baseSavings = calculateSavings(debtAmount)
-  
-  // Calculate debt-to-income ratio
-  const debtToIncomeRatio = (debtAmount / income) * 100
   
   // Calculate affordable monthly payment (10-15% of monthly income)
   const monthlyIncome = income / 12
@@ -137,6 +134,33 @@ export function IncomeScreen({
           <p className="text-body text-neutral-500 text-center">
             Please share your total income before taxes.
           </p>
+          
+          {/* Why we ask accordion */}
+          <button
+            type="button"
+            onClick={() => setShowWhyWeAsk(!showWhyWeAsk)}
+            className="inline-flex items-center justify-center gap-2 text-primary-700 text-body-sm font-medium hover:underline"
+          >
+            Why we ask for this information?
+            {showWhyWeAsk ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </button>
+          
+          {showWhyWeAsk && (
+            <div className="w-full bg-neutral-100 rounded-lg p-4 animate-slide-up text-left">
+              <p className="text-body-sm text-neutral-800">
+                Your income helps us determine the best debt relief options for your situation. 
+                Debt-to-income ratio is an important factor that debt relief providers use to 
+                create a personalized plan that fits your budget.
+              </p>
+              <p className="text-body-sm text-neutral-500 mt-2">
+                This information is kept confidential and only shared with potential debt relief partners.
+              </p>
+            </div>
+          )}
         </div>
         
         {/* Income Card - Matching Figma Design */}
@@ -176,23 +200,6 @@ export function IncomeScreen({
           
           {/* Debt Summary Section */}
           <div className="w-full bg-neutral-100 rounded-lg p-3 border border-neutral-200">
-            {/* Debt-to-income ratio indicator */}
-            <div className="flex justify-between items-center py-1">
-              <span className="text-sm text-neutral-800">Debt-to-income ratio</span>
-              <span className={`text-base font-medium ${
-                debtToIncomeRatio <= 36 
-                  ? 'text-feedback-success' 
-                  : debtToIncomeRatio <= 50 
-                    ? 'text-yellow-600' 
-                    : 'text-feedback-error'
-              }`}>
-                {debtToIncomeRatio.toFixed(0)}%
-              </span>
-            </div>
-            
-            {/* Divider */}
-            <div className="h-px bg-neutral-300 my-2" />
-            
             {/* Your debt row */}
             <div className="flex justify-between items-center py-1">
               <span className="text-sm text-neutral-800">Your debt</span>
@@ -230,37 +237,10 @@ export function IncomeScreen({
           </div>
         </div>
         
-        {/* Why we ask accordion */}
-        <button
-          type="button"
-          onClick={() => setShowWhyWeAsk(!showWhyWeAsk)}
-          className="flex items-center justify-center gap-2 text-primary-700 text-body-sm font-medium hover:underline"
-        >
-          Why we ask for this information?
-          {showWhyWeAsk ? (
-            <ChevronUp className="w-4 h-4" />
-          ) : (
-            <ChevronDown className="w-4 h-4" />
-          )}
-        </button>
-        
-        {showWhyWeAsk && (
-          <div className="w-full bg-neutral-100 rounded-lg p-4 animate-slide-up">
-            <p className="text-body-sm text-neutral-800">
-              Your income helps us determine the best debt relief options for your situation. 
-              Debt-to-income ratio is an important factor that debt relief providers use to 
-              create a personalized plan that fits your budget.
-            </p>
-            <p className="text-body-sm text-neutral-500 mt-2">
-              This information is kept confidential and only shared with potential debt relief partners.
-            </p>
-          </div>
-        )}
-        
         {/* Submit Button */}
         <div className="w-full">
-          <Button type="submit" fullWidth>
-            Give Us Your Details
+          <Button type="submit" fullWidth showTrailingIcon>
+            Continue
           </Button>
         </div>
       </form>
