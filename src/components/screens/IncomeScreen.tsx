@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, DollarSign } from 'lucide-react'
 import { FormLayout } from '@/components/layout/FormLayout'
 import { Button } from '@/components/ui/Button'
 import { Slider } from '@/components/ui/Slider'
@@ -28,7 +28,29 @@ export function IncomeScreen({
 }: IncomeScreenProps) {
   const [income, setIncome] = React.useState(initialValue)
   const [showWhyWeAsk, setShowWhyWeAsk] = React.useState(false)
-  const savings = calculateSavings(debtAmount)
+  
+  // Calculate savings with income-aware monthly payments
+  const baseSavings = calculateSavings(debtAmount)
+  
+  // Calculate debt-to-income ratio
+  const debtToIncomeRatio = (debtAmount / income) * 100
+  
+  // Calculate affordable monthly payment (10-15% of monthly income)
+  const monthlyIncome = income / 12
+  const maxAffordablePayment = Math.round(monthlyIncome * 0.15)
+  
+  // Suggest a payment within the affordable range, but at least enough to pay off in 48 months
+  const minRequiredPayment = Math.round(baseSavings.newDebtAmount / 48)
+  const suggestedPayment = Math.max(minRequiredPayment, Math.min(maxAffordablePayment, Math.round(monthlyIncome * 0.12)))
+  
+  // Calculate payoff timeline based on suggested payment
+  const payoffMonths = Math.ceil(baseSavings.newDebtAmount / suggestedPayment)
+  
+  const savings = {
+    ...baseSavings,
+    monthlyPayment: suggestedPayment,
+    payoffMonths
+  }
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,28 +58,34 @@ export function IncomeScreen({
   }
   
   const markers = [
-    { value: 10000, label: '10K' },
-    { value: 50000, label: '50K' },
+    { value: 20000, label: '20K' },
+    { value: 60000, label: '60K' },
     { value: 100000, label: '100K' },
-    { value: 150000, label: '150K' },
     { value: 200000, label: '200K+' },
   ]
   
-  // Format income display
-  const formatIncome = (value: number) => {
-    if (value >= 200000) return '$200K+'
-    return formatCurrency(value)
+  // Format income display with K notation for large values
+  const formatIncomeDisplay = (value: number) => {
+    if (value >= 200000) return { amount: '$200K+', suffix: '' }
+    if (value >= 1000) {
+      return { 
+        amount: formatCurrency(value), 
+        suffix: '/year' 
+      }
+    }
+    return { amount: formatCurrency(value), suffix: '/year' }
   }
+  
+  const incomeDisplay = formatIncomeDisplay(income)
   
   return (
     <FormLayout 
       currentStep={4} 
       onBack={onBack}
-      sideContent={<SavingsProjection debtAmount={debtAmount} income={income} savings={savings} />}
     >
-      <form onSubmit={handleSubmit} className="animate-slide-up space-y-6">
+      <form onSubmit={handleSubmit} className="animate-slide-up space-y-6 flex flex-col items-center">
         {/* Headline */}
-        <div className="space-y-2 text-center">
+        <div className="w-full space-y-2 text-center">
           <h1 className="font-display text-display sm:text-display-md lg:text-display-lg text-neutral-900 text-center">
             What is your annual income?
           </h1>
@@ -66,32 +94,104 @@ export function IncomeScreen({
           </p>
         </div>
         
-        {/* Income Display */}
-        <div className="bg-primary-300 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-body text-neutral-800">Your income</span>
-            <span className="text-headline-xl text-primary-700 font-bold">
-              {formatIncome(income)}/yr
+        {/* Income Card - Matching Figma Design */}
+        <div className="w-full bg-white rounded-lg px-8 py-6 flex flex-col items-center gap-4">
+          {/* Money Icon */}
+          <div className="w-20 h-20 bg-primary-300 rounded-full flex items-center justify-center">
+            <DollarSign className="w-10 h-10 text-primary-700" />
+          </div>
+          
+          {/* Income Display */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="pb-2 border-b border-neutral-200">
+              <span className="text-3xl font-bold font-display text-neutral-900">
+                {incomeDisplay.amount}
+              </span>
+              {incomeDisplay.suffix && (
+                <span className="text-3xl font-bold font-display text-neutral-500">
+                  {incomeDisplay.suffix}
+                </span>
+              )}
+            </div>
+            <span className="text-caption text-neutral-800">
+              Your income before taxes
             </span>
           </div>
           
-          {/* Slider */}
-          <Slider
-            min={10000}
-            max={200000}
-            step={5000}
-            value={[income]}
-            onValueChange={([value]) => setIncome(value)}
-            markers={markers}
-            showValue={false}
-          />
+          {/* Slider Section */}
+          <div className="w-full max-w-xs">
+            <Slider
+              min={10000}
+              max={200000}
+              step={5000}
+              value={[income]}
+              onValueChange={([value]) => setIncome(value)}
+              markers={markers}
+              showValue={false}
+            />
+          </div>
+          
+          {/* Debt Summary Section */}
+          <div className="w-full bg-neutral-100 rounded-lg p-3 border border-neutral-200">
+            {/* Debt-to-income ratio indicator */}
+            <div className="flex justify-between items-center py-1">
+              <span className="text-sm text-neutral-800">Debt-to-income ratio</span>
+              <span className={`text-base font-medium ${
+                debtToIncomeRatio <= 36 
+                  ? 'text-feedback-success' 
+                  : debtToIncomeRatio <= 50 
+                    ? 'text-yellow-600' 
+                    : 'text-feedback-error'
+              }`}>
+                {debtToIncomeRatio.toFixed(0)}%
+              </span>
+            </div>
+            
+            {/* Divider */}
+            <div className="h-px bg-neutral-300 my-2" />
+            
+            {/* Your debt row */}
+            <div className="flex justify-between items-center py-1">
+              <span className="text-sm text-neutral-800">Your debt</span>
+              <span className="text-base font-medium text-neutral-700">
+                {formatCurrency(debtAmount)}
+              </span>
+            </div>
+            
+            {/* New debt amount row */}
+            <div className="flex justify-between items-center py-1">
+              <span className="text-sm text-neutral-800">New debt amount</span>
+              <span className="text-base font-medium text-feedback-success">
+                {formatCurrency(savings.newDebtAmount)}
+              </span>
+            </div>
+            
+            {/* Divider */}
+            <div className="h-px bg-neutral-300 my-2" />
+            
+            {/* New monthly payments row */}
+            <div className="flex justify-between items-center py-1">
+              <span className="text-sm text-neutral-800">Suggested monthly payment</span>
+              <span className="text-base font-medium text-feedback-success">
+                {formatCurrency(savings.monthlyPayment)}/mo
+              </span>
+            </div>
+            
+            {/* Payoff timeline */}
+            <div className="flex justify-between items-center py-1">
+              <span className="text-sm text-neutral-800">Estimated payoff</span>
+              <span className="text-base font-medium text-neutral-700">
+                {savings.payoffMonths} months
+              </span>
+            </div>
+          </div>
         </div>
         
         {/* Why we ask accordion */}
         <button
           type="button"
           onClick={() => setShowWhyWeAsk(!showWhyWeAsk)}
-          className="flex items-center gap-2 text-primary-700 text-body-sm font-medium hover:underline"
+          className="flex items-center justify-center gap-2 text-primary-700 text-body-sm font-medium hover:underline"
         >
           Why we ask for this information?
           {showWhyWeAsk ? (
@@ -102,7 +202,7 @@ export function IncomeScreen({
         </button>
         
         {showWhyWeAsk && (
-          <div className="bg-neutral-100 rounded-lg p-4 animate-slide-up">
+          <div className="w-full bg-neutral-100 rounded-lg p-4 animate-slide-up">
             <p className="text-body-sm text-neutral-800">
               Your income helps us determine the best debt relief options for your situation. 
               Debt-to-income ratio is an important factor that debt relief providers use to 
@@ -114,88 +214,14 @@ export function IncomeScreen({
           </div>
         )}
         
-        {/* Mobile Savings Projection */}
-        <div className="lg:hidden">
-          <SavingsProjection debtAmount={debtAmount} income={income} savings={savings} />
-        </div>
-        
         {/* Submit Button */}
-        <Button type="submit" fullWidth>
-          Give Us Your Details
-        </Button>
+        <div className="w-full">
+          <Button type="submit" fullWidth>
+            Give Us Your Details
+          </Button>
+        </div>
       </form>
     </FormLayout>
-  )
-}
-
-/**
- * SavingsProjection Component
- * Shows debt projection based on income
- */
-function SavingsProjection({ 
-  debtAmount,
-  income,
-  savings 
-}: { 
-  debtAmount: number
-  income: number
-  savings: ReturnType<typeof calculateSavings>
-}) {
-  const debtToIncomeRatio = ((debtAmount / income) * 100).toFixed(1)
-  
-  return (
-    <div className="bg-white border border-neutral-200 rounded-lg p-6 shadow-card">
-      <h3 className="text-body font-semibold text-neutral-900 mb-4">
-        Your debt projection
-      </h3>
-      
-      {/* Debt to Income Indicator */}
-      <div className="mb-6 p-4 bg-neutral-100 rounded-lg">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-body-sm text-neutral-500">Debt-to-income ratio</span>
-          <span className="text-body font-semibold text-neutral-900">{debtToIncomeRatio}%</span>
-        </div>
-        <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-primary-700 rounded-full transition-all duration-300"
-            style={{ width: `${Math.min(parseFloat(debtToIncomeRatio), 100)}%` }}
-          />
-        </div>
-        <p className="text-caption text-neutral-500 mt-2">
-          {parseFloat(debtToIncomeRatio) <= 36 
-            ? 'Your debt-to-income ratio is in a healthy range'
-            : parseFloat(debtToIncomeRatio) <= 50 
-              ? 'Your debt-to-income ratio is manageable'
-              : 'Your debt-to-income ratio is high — debt relief could help'}
-        </p>
-      </div>
-      
-      {/* Stats */}
-      <div className="space-y-3">
-        <div className="flex justify-between py-2 border-b border-neutral-200">
-          <span className="text-body-sm text-neutral-500">Your debt</span>
-          <span className="text-body-sm text-neutral-900 font-medium">
-            {formatCurrency(debtAmount)}
-          </span>
-        </div>
-        <div className="flex justify-between py-2 border-b border-neutral-200">
-          <span className="text-body-sm text-neutral-500">*New debt amount</span>
-          <span className="text-body-sm text-feedback-success font-medium">
-            {formatCurrency(savings.newDebtAmount)}
-          </span>
-        </div>
-        <div className="flex justify-between py-2">
-          <span className="text-body-sm text-neutral-500">*New monthly payments</span>
-          <span className="text-body-sm text-neutral-900 font-medium">
-            {formatCurrency(savings.monthlyPayment)}/mo
-          </span>
-        </div>
-      </div>
-      
-      <p className="text-caption text-neutral-500 mt-4">
-        *Estimates based on typical debt relief outcomes
-      </p>
-    </div>
   )
 }
 
