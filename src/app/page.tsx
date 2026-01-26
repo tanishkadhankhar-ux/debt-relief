@@ -7,6 +7,7 @@ import {
   DidYouKnowScreen,
   DebtAmountScreen,
   IncomeScreen,
+  ResultsPreviewScreen,
   DateOfBirthScreen,
   NameScreen,
   DebtProfileScreen,
@@ -23,6 +24,7 @@ type FunnelStep =
   | 'didYouKnow'
   | 'debtAmount'
   | 'income'
+  | 'resultsPreview'
   | 'dateOfBirth'
   | 'name'
   | 'debtProfile'
@@ -38,6 +40,7 @@ const STEP_ORDER: FunnelStep[] = [
   'didYouKnow',
   'debtAmount',
   'income',
+  'resultsPreview',
   'dateOfBirth',
   'name',
   'debtProfile',
@@ -133,6 +136,17 @@ export default function Home() {
               updateFunnelData({ annualIncome })
               goToNextStep()
             }}
+          />
+        )
+      
+      case 'resultsPreview':
+        return (
+          <ResultsPreviewScreen
+            debtAmount={funnelData.debtAmount || 20000}
+            debtType={funnelData.debtType || 'credit-card'}
+            income={funnelData.annualIncome || 50000}
+            onBack={goToPreviousStep}
+            onNext={goToNextStep}
           />
         )
       

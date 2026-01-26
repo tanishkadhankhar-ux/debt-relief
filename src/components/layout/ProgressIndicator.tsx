@@ -15,16 +15,17 @@ const stepSubtitles: Record<number, string> = {
   2: 'What kind of debt do you have?',
   3: 'How much debt do you have?',
   4: 'Tell us about your income',
-  5: 'When were you born?',
-  6: "What's your name?",
-  7: 'Your personalized debt profile',
-  8: 'Where should we send your results?',
-  9: 'Verify your phone number',
-  10: 'Final step - your address',
+  5: 'Your personalized results',
+  6: 'When were you born?',
+  7: "What's your name?",
+  8: 'Your personalized debt profile',
+  9: 'Where should we send your results?',
+  10: 'Verify your phone number',
+  11: 'Final step - your address',
 }
 
 const TOTAL_SEGMENTS = 6
-const TOTAL_STEPS = 10
+const TOTAL_STEPS = 11
 
 /**
  * ProgressIndicator Component

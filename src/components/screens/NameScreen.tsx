@@ -59,7 +59,7 @@ export function NameScreen({
   }
   
   return (
-    <FormLayout currentStep={6} onBack={onBack}>
+    <FormLayout currentStep={7} onBack={onBack}>
       <form onSubmit={handleSubmit(onFormSubmit)} className="animate-slide-up space-y-6">
         {/* Headline */}
         <div className="space-y-2 text-center">
