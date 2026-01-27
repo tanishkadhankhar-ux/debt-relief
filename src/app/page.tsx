@@ -10,6 +10,7 @@ import {
   ResultsPreviewScreen,
   DateOfBirthScreen,
   NameScreen,
+  ProcessingScreen,
   DebtProfileScreen,
   EmailScreen,
   PhoneScreen,
@@ -27,6 +28,7 @@ type FunnelStep =
   | 'resultsPreview'
   | 'dateOfBirth'
   | 'name'
+  | 'processing'
   | 'debtProfile'
   | 'email'
   | 'phone'
@@ -43,6 +45,7 @@ const STEP_ORDER: FunnelStep[] = [
   'resultsPreview',
   'dateOfBirth',
   'name',
+  'processing',
   'debtProfile',
   'email',
   'phone',
@@ -175,6 +178,13 @@ export default function Home() {
               updateFunnelData({ firstName, lastName })
               goToNextStep()
             }}
+          />
+        )
+      
+      case 'processing':
+        return (
+          <ProcessingScreen
+            onNext={goToNextStep}
           />
         )
       
