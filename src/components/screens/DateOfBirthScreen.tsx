@@ -108,11 +108,11 @@ export function DateOfBirthScreen({
         {/* Headline */}
         <div className="space-y-2 text-center">
           <h1 className="font-display text-display sm:text-display-md lg:text-display-lg text-neutral-900 text-center">
-            Your date of birth
+            When were you born?
           </h1>
           <p className="text-body text-neutral-500 text-center">
-            Your birth date helps providers tailor offers that fit your financial 
-            situation and eligibility.
+            Certain debt relief programs have age-based eligibility. This helps us 
+            match you with options you actually qualify for.
           </p>
         </div>
         
