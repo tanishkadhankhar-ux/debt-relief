@@ -24,3 +24,6 @@ export { Starburst } from './Starburst'
 export { LottieIcon } from './LottieIcon'
 
 export { Tooltip } from './Tooltip'
+
+export { AddressAutocomplete } from './AddressAutocomplete'
+export type { ParsedAddress } from './AddressAutocomplete'
