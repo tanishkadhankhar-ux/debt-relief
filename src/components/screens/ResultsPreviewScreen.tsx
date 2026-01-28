@@ -49,6 +49,20 @@ function calculatePayoffMonths(debtAmount: number, income: number): number {
 }
 
 /**
+ * Get contextual DTI message based on ratio
+ * Provides accurate, helpful messaging without misleading claims
+ */
+function getDTIMessage(ratio: number): string {
+  if (ratio < 30) {
+    return `Your debt-to-income ratio of ${ratio}% is low, which gives you more options for relief programs.`
+  } else if (ratio < 50) {
+    return `Your debt-to-income ratio of ${ratio}% is moderate. Many relief programs work well for people in your situation.`
+  } else {
+    return `Your debt-to-income ratio of ${ratio}% shows you're carrying significant debt relative to income — which is exactly what debt relief programs are designed to help with.`
+  }
+}
+
+/**
  * ResultsPreviewScreen
  * 
  * Interstitial "value moment" screen that shows personalized results
@@ -107,17 +121,20 @@ export function ResultsPreviewScreen({
 
           {/* Savings Amount */}
           <div className="my-3">
-            <AnimatedCounter
-              value={savings}
-              prefix="$"
-              duration={1200}
-              className="text-4xl md:text-5xl font-bold font-display text-primary-700"
-            />
+            <span className="text-4xl md:text-5xl font-bold font-display text-primary-700">
+              <AnimatedCounter
+                value={savings}
+                prefix="$"
+                duration={1200}
+                className="inline"
+              />
+              <span className="text-2xl align-top">*</span>
+            </span>
           </div>
 
           {/* Payoff Line */}
           <p className="text-body text-neutral-700">
-            and be debt-free in as little as <span className="font-semibold">{payoffMonths} months</span>
+            and pay off your reduced balance in as little as <span className="font-semibold">{payoffMonths} months</span>
           </p>
         </div>
 
@@ -126,8 +143,15 @@ export function ResultsPreviewScreen({
           className="text-body-sm text-neutral-500 mt-6 max-w-sm mx-auto animate-fade-in-up"
           style={{ animationDelay: '800ms' }}
         >
-          Your debt-to-income ratio of <span className="font-medium">{debtToIncomeRatio}%</span> puts 
-          you in a favorable range for most relief programs.
+          {getDTIMessage(debtToIncomeRatio)}
+        </p>
+
+        {/* Disclaimer - 0.9s delay */}
+        <p 
+          className="text-caption text-neutral-400 mt-4 max-w-sm mx-auto animate-fade-in-up"
+          style={{ animationDelay: '900ms' }}
+        >
+          *Estimated savings. Actual results vary based on your specific debt situation and enrolled program.
         </p>
 
         {/* CTA Button - 1.0s delay */}

@@ -21,4 +21,6 @@ export { AnimatedCounter } from './AnimatedCounter'
 
 export { Starburst } from './Starburst'
 
-export { LottieIcon } from './LottieIcon'
+export { LottieIcon }
+
+export { Tooltip } from './Tooltip' from './LottieIcon'

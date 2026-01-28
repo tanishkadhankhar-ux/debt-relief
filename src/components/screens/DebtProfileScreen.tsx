@@ -7,7 +7,8 @@ import {
   TrendingDown, 
   Calendar,
   Users,
-  Check
+  Check,
+  HelpCircle
 } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -16,6 +17,7 @@ import { ProgressIndicator } from '@/components/layout/ProgressIndicator'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Checkbox } from '@/components/ui/Checkbox'
+import { Tooltip } from '@/components/ui/Tooltip'
 import { formatCurrency, formatPhoneNumber, cn } from '@/lib/utils'
 import type { DebtTypeOption } from '@/types/funnel'
 import { US_STATES } from '@/types/funnel'
@@ -424,20 +426,60 @@ export function DebtProfileScreen({
               )}
             </div>
             
-            {/* Left Column - Profile Card */}
+            {/* Left Column - Profile Card OR What You'll Receive */}
             <div className="animate-fade-in-up">
-              <form onSubmit={handleSeeOptions}>
+              {showPhoneForm ? (
+                /* Condensed Profile + Value List Card */
                 <div className="bg-white rounded-2xl p-6 md:p-8 shadow-card border border-gray-100">
-                  {/* Stats Box */}
-                  <div className="bg-gray-50 rounded-xl p-4">
-                    {/* Row 1 - Debt-to-Income Ratio (highlighted) */}
-                    <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                  {/* Mini Title */}
+                  <p className="text-xs uppercase tracking-wide text-neutral-500 mb-4">
+                    Based on what you told us
+                  </p>
+                  
+                  {/* Potential Savings Box */}
+                  <div className="bg-secondary-300 rounded-xl p-5 mb-5">
+                    <p className="text-sm text-neutral-500">Potential Savings</p>
+                    <p className="text-3xl font-bold text-feedback-success mt-1">
+                      {formatCurrency(savings)}*
+                    </p>
+                    <p className="text-sm text-neutral-500 mt-1">
+                      Timeline: 24-36 months
+                    </p>
+                  </div>
+                  
+                  {/* Condensed Profile Summary */}
+                  <div className="bg-gray-50 rounded-xl p-4 mb-5">
+                    {/* Row 1 - Total Debt */}
+                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="text-sm text-neutral-500">Total Debt</span>
+                      <span className="text-sm font-semibold text-neutral-800">
+                        {formatCurrency(debtAmount)}
+                      </span>
+                    </div>
+                    
+                    {/* Row 2 - Debt Type */}
+                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="text-sm text-neutral-500 flex items-center gap-1">
+                        Debt Type
+                        <Tooltip content="Based on your selection earlier. This determines which relief programs may be the best fit for you.">
+                          <HelpCircle className="w-3.5 h-3.5 text-neutral-400 hover:text-neutral-600 transition-colors" />
+                        </Tooltip>
+                      </span>
+                      <span className="text-sm font-semibold text-neutral-800">
+                        {DEBT_TYPE_LABELS[debtType]}
+                      </span>
+                    </div>
+                    
+                    {/* Row 3 - DTI Ratio */}
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-sm text-neutral-500 flex items-center gap-1">
+                        DTI Ratio
+                        <Tooltip content={`Your debt-to-income ratio is calculated by dividing your total debt (${formatCurrency(debtAmount)}) by your annual income (${formatCurrency(income)}). A higher ratio often means debt relief programs can help more.`}>
+                          <HelpCircle className="w-3.5 h-3.5 text-neutral-400 hover:text-neutral-600 transition-colors" />
+                        </Tooltip>
+                      </span>
                       <div className="flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-neutral-500" />
-                        <span className="text-sm text-neutral-800">Debt-to-Income Ratio</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-neutral-900">{ratio}%</span>
+                        <span className="text-sm font-semibold text-neutral-800">{ratio}%</span>
                         <span className={cn(
                           'px-2 py-0.5 rounded-full text-xs font-medium',
                           ratioBadge.className
@@ -446,72 +488,119 @@ export function DebtProfileScreen({
                         </span>
                       </div>
                     </div>
-                    
-                    {/* Row 2 - Debt Type */}
-                    <div className="flex justify-between py-3 border-b border-gray-200">
-                      <span className="text-sm text-neutral-800">Debt Type</span>
-                      <span className="font-semibold text-neutral-900">
-                        {DEBT_TYPE_LABELS[debtType]}
-                      </span>
-                    </div>
-                    
-                    {/* Row 3 - Total Debt */}
-                    <div className="flex justify-between py-3 border-b border-gray-200">
-                      <span className="text-sm text-neutral-800">Total Debt</span>
-                      <span className="font-semibold text-neutral-900">
-                        {formatCurrency(debtAmount)}
-                      </span>
-                    </div>
-                    
-                    {/* Row 4 - Annual Income */}
-                    <div className="flex justify-between pt-3">
-                      <span className="text-sm text-neutral-800">Annual Income</span>
-                      <span className="font-semibold text-neutral-900">
-                        {formatCurrency(income)}
-                      </span>
-                    </div>
                   </div>
                   
-                  {/* Recommended Approach */}
-                  <div className="mt-6">
-                    <p className="text-xs uppercase tracking-wide text-neutral-500 mb-3">
-                      Recommended Approach
-                    </p>
-                    <div className="inline-flex flex-wrap gap-2">
-                      <span className="bg-primary-300 text-primary-700 px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5">
-                        <Handshake className="w-4 h-4" />
-                        Debt Negotiation
-                      </span>
-                      <span className="bg-primary-300 text-primary-700 px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5">
-                        <TrendingDown className="w-4 h-4" />
-                        Lower Interest
-                      </span>
-                      <span className="bg-primary-300 text-primary-700 px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5">
-                        <Calendar className="w-4 h-4" />
-                        Payment Plan
-                      </span>
+                  {/* Value List Header */}
+                  <p className="text-sm font-semibold text-neutral-900 mb-3">
+                    Verify to unlock:
+                  </p>
+                  
+                  {/* Value List */}
+                  <div className="space-y-2">
+                    {[
+                      "Personalized debt relief options",
+                      "Side-by-side partner comparison",
+                      "No obligation — compare and decide"
+                    ].map((title, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-feedback-success flex-shrink-0" />
+                        <p className="text-sm text-neutral-800">{title}</p>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Disclaimer */}
+                  <p className="text-xs text-neutral-400 mt-4">
+                    *Estimated savings. Results vary.
+                  </p>
+                </div>
+              ) : (
+                /* Debt Profile Card */
+                <form onSubmit={handleSeeOptions}>
+                  <div className="bg-white rounded-2xl p-6 md:p-8 shadow-card border border-gray-100">
+                    {/* Stats Box */}
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      {/* Row 1 - Debt-to-Income Ratio (highlighted) */}
+                      <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-neutral-500" />
+                          <span className="text-sm text-neutral-800">Debt-to-Income Ratio</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-neutral-900">{ratio}%</span>
+                          <span className={cn(
+                            'px-2 py-0.5 rounded-full text-xs font-medium',
+                            ratioBadge.className
+                          )}>
+                            {ratioBadge.label}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Row 2 - Debt Type */}
+                      <div className="flex justify-between py-3 border-b border-gray-200">
+                        <span className="text-sm text-neutral-800">Debt Type</span>
+                        <span className="font-semibold text-neutral-900">
+                          {DEBT_TYPE_LABELS[debtType]}
+                        </span>
+                      </div>
+                      
+                      {/* Row 3 - Total Debt */}
+                      <div className="flex justify-between py-3 border-b border-gray-200">
+                        <span className="text-sm text-neutral-800">Total Debt</span>
+                        <span className="font-semibold text-neutral-900">
+                          {formatCurrency(debtAmount)}
+                        </span>
+                      </div>
+                      
+                      {/* Row 4 - Annual Income */}
+                      <div className="flex justify-between pt-3">
+                        <span className="text-sm text-neutral-800">Annual Income</span>
+                        <span className="font-semibold text-neutral-900">
+                          {formatCurrency(income)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  
-                  {/* Savings Box */}
-                  <div className="bg-secondary-300 rounded-xl p-4 mt-6">
-                    <p className="text-neutral-500 text-sm">Potential Savings</p>
-                    <p className="text-2xl font-bold text-feedback-success">
-                      {formatCurrency(savings)}
-                    </p>
-                    <p className="text-neutral-500 text-sm mt-1">
-                      Timeline: 24-36 months
-                    </p>
-                  </div>
-                  
-                  {/* CTA Button - only shown when phone form is NOT visible */}
-                  {!showPhoneForm && (
+                    
+                    {/* Recommended Approach */}
+                    <div className="mt-6">
+                      <p className="text-xs uppercase tracking-wide text-neutral-500 mb-3">
+                        Recommended Approach
+                      </p>
+                      <div className="inline-flex flex-wrap gap-2">
+                        <span className="bg-primary-300 text-primary-700 px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5">
+                          <Handshake className="w-4 h-4" />
+                          Debt Negotiation
+                        </span>
+                        <span className="bg-primary-300 text-primary-700 px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5">
+                          <TrendingDown className="w-4 h-4" />
+                          Lower Interest
+                        </span>
+                        <span className="bg-primary-300 text-primary-700 px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5">
+                          <Calendar className="w-4 h-4" />
+                          Payment Plan
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Savings Box */}
+                    <div className="bg-secondary-300 rounded-xl p-4 mt-6">
+                      <p className="text-neutral-500 text-sm">Potential Savings</p>
+                      <p className="text-2xl font-bold text-feedback-success">
+                        {formatCurrency(savings)}
+                      </p>
+                      <p className="text-neutral-500 text-sm mt-1">
+                        Timeline: 24-36 months
+                      </p>
+                    </div>
+                    
+                    {/* CTA Button */}
                     <Button type="submit" fullWidth showTrailingIcon className="mt-6">
                       See My Options
                     </Button>
-                  )}
-                </div>
-              </form>
+                  </div>
+                </form>
+              )}
             </div>
             
             {/* Right Column - Image with overlay OR Phone Form (Desktop only) */}

@@ -132,7 +132,7 @@ export function IncomeScreen({
             What is your annual income?
           </h1>
           <p className="text-body text-neutral-500 text-center">
-            Please share your total income before taxes.
+            Your individual income before taxes
           </p>
           
           {/* Why we ask accordion */}
