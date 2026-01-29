@@ -14,7 +14,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { TrustBadges } from '@/components/layout/TrustBadges'
 import { ProgressIndicator } from '@/components/layout/ProgressIndicator'
-import { Button, StickyButtonContainer } from '@/components/ui'
+import { Button, StickyButtonContainer, OTPVerificationModal } from '@/components/ui'
 import { Input } from '@/components/ui/Input'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Tooltip } from '@/components/ui/Tooltip'
@@ -238,6 +238,9 @@ export function DebtProfileScreen({
   const [phoneError, setPhoneError] = React.useState('')
   const [consentError, setConsentError] = React.useState('')
   
+  // OTP modal state
+  const [showOTPModal, setShowOTPModal] = React.useState(false)
+  
   // Calculate values
   const ratio = Math.round((debtAmount / income) * 100)
   const savings = Math.round(debtAmount * 0.4)
@@ -262,7 +265,7 @@ export function DebtProfileScreen({
     setTimeout(() => setIsAnimating(false), 500)
   }
   
-  // Handle phone form submission
+  // Handle phone form submission - show OTP modal
   const handlePhoneSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -289,7 +292,26 @@ export function DebtProfileScreen({
       return
     }
     
+    // Show OTP verification modal
+    setShowOTPModal(true)
+  }
+  
+  // Handle OTP verification (dummy for now)
+  const handleOTPVerify = (otp: string) => {
+    console.log('OTP verified:', otp)
+    setShowOTPModal(false)
     onPhoneSubmit?.({ phone, consent })
+  }
+  
+  // Handle OTP skip
+  const handleOTPSkip = () => {
+    setShowOTPModal(false)
+    onPhoneSubmit?.({ phone, consent })
+  }
+  
+  // Handle resend OTP (dummy for now)
+  const handleResendOTP = () => {
+    console.log('Resending OTP...')
   }
   
   // Clear consent error when user checks the box
@@ -685,6 +707,15 @@ export function DebtProfileScreen({
       
       {/* Footer */}
       <Footer />
+      
+      {/* OTP Verification Modal */}
+      <OTPVerificationModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onVerify={handleOTPVerify}
+        onSkip={handleOTPSkip}
+        onResend={handleResendOTP}
+      />
     </div>
   )
 }

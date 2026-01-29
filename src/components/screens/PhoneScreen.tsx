@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { FormLayout } from '@/components/layout/FormLayout'
-import { Button, StickyButtonContainer } from '@/components/ui'
+import { Button, StickyButtonContainer, OTPVerificationModal } from '@/components/ui'
 import { Input } from '@/components/ui/Input'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { formatPhoneNumber } from '@/lib/utils'
@@ -26,6 +26,7 @@ interface PhoneScreenProps {
   initialValue?: string
   onBack?: () => void
   onSubmit?: (data: { phone: string; consent: boolean }) => void
+  onSkipOTP?: () => void
 }
 
 /**
@@ -33,12 +34,17 @@ interface PhoneScreenProps {
  * 
  * Step 9 of the funnel - "Confirm Your phone number"
  * Shows formatted phone input and legal consent checkbox
+ * Opens OTP verification modal on submit
  */
 export function PhoneScreen({ 
   initialValue = '', 
   onBack, 
-  onSubmit 
+  onSubmit,
+  onSkipOTP 
 }: PhoneScreenProps) {
+  const [showOTPModal, setShowOTPModal] = React.useState(false)
+  const [pendingFormData, setPendingFormData] = React.useState<PhoneFormData | null>(null)
+  
   const {
     register,
     handleSubmit,
@@ -61,8 +67,35 @@ export function PhoneScreen({
     setValue('phone', formatted, { shouldValidate: true })
   }
   
+  // Show OTP modal when form is valid
   const onFormSubmit = (data: PhoneFormData) => {
-    onSubmit?.(data)
+    setPendingFormData(data)
+    setShowOTPModal(true)
+  }
+  
+  // Handle OTP verification (dummy for now)
+  const handleOTPVerify = (otp: string) => {
+    console.log('OTP verified:', otp)
+    setShowOTPModal(false)
+    if (pendingFormData) {
+      onSubmit?.(pendingFormData)
+    }
+  }
+  
+  // Handle OTP skip
+  const handleOTPSkip = () => {
+    setShowOTPModal(false)
+    if (onSkipOTP) {
+      onSkipOTP()
+    } else if (pendingFormData) {
+      onSubmit?.(pendingFormData)
+    }
+  }
+  
+  // Handle resend OTP (dummy for now)
+  const handleResendOTP = () => {
+    console.log('Resending OTP...')
+    // In a real implementation, this would trigger an API call
   }
   
   return (
@@ -141,6 +174,15 @@ export function PhoneScreen({
           </Button>
         </StickyButtonContainer>
       </form>
+      
+      {/* OTP Verification Modal */}
+      <OTPVerificationModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onVerify={handleOTPVerify}
+        onSkip={handleOTPSkip}
+        onResend={handleResendOTP}
+      />
     </FormLayout>
   )
 }

@@ -29,3 +29,5 @@ export { AddressAutocomplete } from './AddressAutocomplete'
 export type { ParsedAddress } from './AddressAutocomplete'
 
 export { StickyButtonContainer } from './StickyButtonContainer'
+
+export { OTPVerificationModal } from './OTPVerificationModal'
